@@ -1,6 +1,6 @@
 # plonky
 
-Independent security researcher. Currently breaking things responsibly.
+Learning programming, networking, hacking, and games. Breaking things responsibly :)
 
 - [Security Research](/security)
 - [GitHub](https://github.com/plonky)
