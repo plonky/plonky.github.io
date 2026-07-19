@@ -35,7 +35,7 @@
    <div style="margin-top:26px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
     <span style="font-size:13px;color:#56d364">ADV-2026-001</span>
     <span style="font-size:28px;color:#e4efe9;font-weight:600;letter-spacing:.01em">CLEANSTER</span>
-    <span style="font-size:12px;color:#e3b341;border:1px solid #4a3d18;background:#1a1608;padding:4px 10px;border-radius:5px">● DISCLOSED — no vendor response received</span>
+    <span style="font-size:12px;color:#e3b341;border:1px solid #4a3d18;background:#1a1608;padding:4px 10px;border-radius:5px">● DISCLOSED. No vendor response received</span>
    </div>
    <div class="fill" style="margin-top:14px;max-width:720px">A black-box assessment of Cleanster's public web application and API surface identified eight findings, ranging from plaintext password storage and email/link injection in the password-reset flow to an exposed production backend, an unrestricted Google Maps API key, and a decodable session JWT. All findings were confirmed on a dedicated test account; no destructive testing was performed against real user data.</div>
 
@@ -86,7 +86,7 @@
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">DESCRIPTION</div>
     <div class="fill">Submitting a request to <code>POST /forgotpincode</code> with a registered account's email causes the server to email that account's actual current password in plaintext, rather than issuing a time-limited reset token. This was first noticed when a legitimate password-reset request returned the account's real, still-valid password in the email body, and was independently reproduced against a dedicated test account. This confirms passwords are stored in a reversible or unhashed format on the backend, rather than a proper salted hash.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">IMPACT</div>
-    <div class="fill">Anyone with access to a victim's email inbox — via a compromised mail provider, shared device, or intercepted message — obtains their live Cleanster password in plaintext, with no need to crack or reset anything. It also means any future or historical breach of Cleanster's database would expose every user's real password directly, since none of them appear to be hashed. CVSS reflects a High technical score, but the real-world severity is treated as Critical here given the systemic nature of the underlying storage flaw.</div>
+    <div class="fill">Anyone with access to a victim's email inbox via a compromised mail provider, shared device, or intercepted message, obtains their live Cleanster password in plaintext, with no need to crack or reset anything. It also means any future or historical breach of Cleanster's database would expose every user's real password directly, since none of them appear to be hashed. CVSS reflects a High technical score, but the real-world severity is treated as Critical here given the systemic nature of the underlying storage flaw.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">REMEDIATION</div>
     <div class="fill">Store passwords with a modern salted hash (bcrypt, scrypt, or Argon2) and remove any backend capability to retrieve the original password. Replace the plaintext-password-email flow with a single-use, time-limited reset link.</div>
    </div>
@@ -98,7 +98,7 @@
     </div>
     <div style="margin-top:10px;font-size:11.5px;color:#5a6b60;letter-spacing:.04em">Improper Neutralization of Special Elements (Injection) · CWE-74 · PLNK-2026-002 &nbsp;·&nbsp; CVSS 3.1 AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">DESCRIPTION</div>
-    <div class="fill">The <code>ipaddress</code> field in the JSON body of <code>POST /forgotpincode</code> is reflected directly, unsanitized, into the body of the outbound password-reset email. Sending <code>"ipaddress": null</code> produced an email addressed to "user null"; setting the value to an arbitrary string reproduced that string verbatim in the email. A CRLF injection attempt (<code>%0d%0a</code>) to manipulate mail headers was tested and did not succeed — special characters were rendered literally rather than interpreted.</div>
+    <div class="fill">The <code>ipaddress</code> field in the JSON body of <code>POST /forgotpincode</code> is reflected directly, unsanitized, into the body of the outbound password-reset email. Sending <code>"ipaddress": null</code> produced an email addressed to "user null"; setting the value to an arbitrary string reproduced that string verbatim in the email. A CRLF injection attempt (<code>%0d%0a</code>) to manipulate mail headers was tested and did not succeed. Special characters were rendered literally rather than interpreted.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">IMPACT</div>
     <div class="fill">An attacker can inject arbitrary attacker-controlled text into a legitimate, authenticated Cleanster email sent to any account holder, without needing credentials. While header injection was not achieved, body content manipulation alone is sufficient to alter what a trusted-sender email appears to say.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">REMEDIATION</div>
@@ -114,7 +114,7 @@
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">DESCRIPTION</div>
     <div class="fill">Building on Finding 02, the same <code>ipaddress</code> parameter on <code>POST /forgotpincode</code> was found to render injected URL strings as clickable hyperlinks in the delivered email. An attacker-supplied URL placed in this field appears as a live link in an otherwise entirely legitimate Cleanster email.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">IMPACT</div>
-    <div class="fill">An attacker can embed a malicious, attacker-controlled link inside a real password-reset email sent from Cleanster's own infrastructure. Because the sender, formatting, and surrounding content are all genuine, this is a highly effective phishing vector — the victim has no reliable way to distinguish it from a legitimate reset email, and typical "check the sender" phishing advice does not protect against it.</div>
+    <div class="fill">An attacker can embed a malicious, attacker-controlled link inside a real password-reset email sent from Cleanster's own infrastructure. Because the sender, formatting, and surrounding content are all genuine, this is a highly effective phishing vector. The victim has no reliable way to distinguish it from a legitimate reset email, and typical "check the sender" phishing advice does not protect against it.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">REMEDIATION</div>
     <div class="fill">Apply the same input sanitization recommended in Finding 02, and additionally strip or escape any URL-like patterns from user-controllable fields before they reach an email template. Consider rendering user-influenced fields as plaintext only, never as HTML.</div>
    </div>
@@ -168,7 +168,7 @@
     </div>
     <div style="margin-top:10px;font-size:11.5px;color:#5a6b60;letter-spacing:.04em">Insufficiently Protected Credentials · CWE-522 · PLNK-2026-007 &nbsp;·&nbsp; CVSS 3.1 AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">DESCRIPTION</div>
-    <div class="fill">A session JWT was observed in Burp Suite's HTTP history during normal authenticated browsing. Decoding it at jwt.io confirmed it contains user session data. An "alg: none" signature-bypass attack was attempted against it and did not succeed — the server correctly validated the token's signature.</div>
+    <div class="fill">A session JWT was observed in Burp Suite's HTTP history during normal authenticated browsing. Decoding it at jwt.io confirmed it contains user session data. An "alg: none" signature-bypass attack was attempted against it and did not succeed. The server correctly validated the token's signature.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">IMPACT</div>
     <div class="fill">This finding is primarily informational: the token's structure and claim contents are visible to anyone who can observe traffic (e.g., on a shared network without TLS interception protections), but the attempted forgery exploit was unsuccessful, meaning the server's validation appears sound. Listed for completeness and as a reminder that session tokens still warrant careful handling.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">REMEDIATION</div>
@@ -184,7 +184,7 @@
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">DESCRIPTION</div>
     <div class="fill">No rate limiting was observed on <code>POST /forgotpincode</code> during testing. This was identified as a gap based on endpoint behavior rather than exhaustively load-tested, and is reported with that caveat.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">IMPACT</div>
-    <div class="fill">Absent rate limiting, an attacker could repeatedly call the endpoint to flood a target user's inbox with password-reset emails — each one containing their live plaintext password per Finding 01 — or to enumerate accounts at scale using Finding 04. This finding meaningfully amplifies the severity of Findings 01 and 04.</div>
+    <div class="fill">Absent rate limiting, an attacker could repeatedly call the endpoint to flood a target user's inbox with password-reset emails, each one containing their live plaintext password per Finding 01, or to enumerate accounts at scale using Finding 04. This finding meaningfully amplifies the severity of Findings 01 and 04.</div>
     <div style="margin-top:16px;color:#3d4a42;font-size:11px;letter-spacing:.14em">REMEDIATION</div>
     <div class="fill">Apply per-IP and per-account rate limiting to the password-reset endpoint, with exponential backoff and/or CAPTCHA after a small number of requests in a short window.</div>
    </div>
@@ -194,7 +194,7 @@
     <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px;font-size:13px">
      <div style="display:flex;gap:18px"><span style="color:#56d364;width:96px;flex:none">2026-04-19</span><span style="color:#aebbb3">Vulnerabilities discovered and verified against a dedicated test account; reported to Cleanster support the same day</span></div>
      <div style="display:flex;gap:18px"><span style="color:#5a6b60;width:96px;flex:none">—</span><span style="color:#7c8a80">No acknowledgment or response received from either contact despite follow-up attempts</span></div>
-     <div style="display:flex;gap:18px"><span style="color:#56d364;width:96px;flex:none">2026-07-18</span><span style="color:#aebbb3">Public disclosure (this advisory) — 90+ days after initial report, per standard coordinated disclosure timeline</span></div>
+     <div style="display:flex;gap:18px"><span style="color:#56d364;width:96px;flex:none">2026-07-18</span><span style="color:#aebbb3">Public disclosure (this advisory) 90+ days after initial report, per standard coordinated disclosure timeline</span></div>
     </div>
    </div>
 
